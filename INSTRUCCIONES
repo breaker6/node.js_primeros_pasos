@@ -18,9 +18,14 @@ npm install babel-cli
     ]
 }
 
-4.-Dentro de package.json modificar la sección scripts por esta:
+4.-Dentro de package.json modificar la sección scripts por esta en windows:
 "scripts": {
-    "start": "node src/index.js",
+    "start": "node --require babel-register src/index.js",
+    "lint": "standard 'src/**/*.js'"
+},
+Si estamos en linux, lo ponemos así
+"scripts": {
+    "start": "node --require 'babel-register' src/index.js",
     "lint": "standard 'src/**/*.js'"
 },
 
