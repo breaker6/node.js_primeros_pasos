@@ -1,0 +1,35 @@
+1.- Ejecutar este comando para instalar babel y sus dependencias:
+npm install --save-dev babel babel-preset-env babel-register
+
+2.-Ejecutar este para instalar babel-cli
+npm install babel-cli
+
+3.-Crear un archivo llamado .babelrc y escribirle esto dentro:
+{
+    "presets":[
+        [
+            "env",
+            {
+                "targets": {
+                    "node": "9.3.0"              
+                }
+            }
+        ]
+    ]
+}
+
+4.-Dentro de package.json modificar la sección scripts por esta:
+"scripts": {
+    "start": "node src/index.js",
+    "lint": "standard 'src/**/*.js'"
+},
+
+5.-Sobreescribir el archivo src/index.js y meterle este código:
+const value = 24
+const miFn = num => num * 10
+console.log(miFn(value))
+
+6.-Ejecutar npm run start para comprobar que funciona
+
+7.-Con el comando node_modules/babel-cli/bin/babel.js src/index.js --out-file compilado.js podemos
+introducir la ejecucion en un archivo

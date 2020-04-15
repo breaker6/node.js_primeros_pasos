@@ -4,8 +4,8 @@
   "description": "Mi primer proyecto en Node.js",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "lint": "standard 'src/**/*.js'"
   },
   "repository": {
     "type": "git",
@@ -19,5 +19,11 @@
   "bugs": {
     "url": "https://github.com/breaker6/node.js_primeros_pasos/issues"
   },
-  "homepage": "https://github.com/breaker6/node.js_primeros_pasos#readme"
+  "homepage": "https://github.com/breaker6/node.js_primeros_pasos#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0"
+  }
 }
