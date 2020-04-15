@@ -1,40 +1,29 @@
-1.- Ejecutar este comando para instalar babel y sus dependencias:
-npm install --save-dev babel babel-preset-env babel-register
+1.- Creamos un fichero txt en la raiz de la aplicación (aquí llamado sample.txt)
 
-2.-Ejecutar este para instalar babel-cli
-npm install babel-cli
+2.- Metemos el siguiente código en index.js:
+//importamos las librerias para leer texto
+import fs from 'fs'
+//import * as fs from 'fs'
+import readline from 'readline'
 
-3.-Crear un archivo llamado .babelrc y escribirle esto dentro:
-{
-    "presets":[
-        [
-            "env",
-            {
-                "targets": {
-                    "node": "9.3.0"              
-                }
-            }
-        ]
-    ]
-}
+//Cogemos el segundo argumento recibido en la ejecución, que será el número del fichero
+const file = process.argv[2]
+let lines = 0
+//console.log(file)
 
-4.-Dentro de package.json modificar la sección scripts por esta en windows:
-"scripts": {
-    "start": "node --require babel-register src/index.js",
-    "lint": "standard 'src/**/*.js'"
-},
-Si estamos en linux, lo ponemos así
-"scripts": {
-    "start": "node --require 'babel-register' src/index.js",
-    "lint": "standard 'src/**/*.js'"
-},
+//Creamos la constante para leer
+const rl = readline.createInterface({
+    input: fs.createReadStream(file),
+    crlfDelay: Infinity
+})
 
-5.-Sobreescribir el archivo src/index.js y meterle este código:
-const value = 24
-const miFn = num => num * 10
-console.log(miFn(value))
+//Vamos contando las lineas y mostrando el número de carácteres en cada linea
+rl.on('line', line =>{
+    ++lines
+    console.log(`Numero total de caracteres por linea: ${line.length}`)
+})
 
-6.-Ejecutar npm run start para comprobar que funciona
+//Mostramos la suma de todas las lineas
+rl.on('close', () => console.log(`Numero total de lineas: ${lines}`))
 
-7.-Con el comando node_modules/babel-cli/bin/babel.js src/index.js --out-file compilado.js podemos
-introducir la ejecucion en un archivo
+3.-Ejecutamos con npm run start sample.txt
