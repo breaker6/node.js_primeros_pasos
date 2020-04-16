@@ -1,36 +1,33 @@
-// Muestra el número total de lineas, y el número de palabras por linea
+//Creamos el servidor
 
-//Importamos la libreria readline
-import readline from 'readline'
-//Le decimos que vamos a utilizar los scripts async.js y events.js
-import async from './async'
-import events from './events'
+//Importamos la libreria net que será la necesaria
+import net from 'net'
 
-//Guardamos el parámetro que corresponde al archivo que queremos leer
-const file = process.argv[2]
-
-//Creamos el objeto rl con los parámetros input y output
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
+//Creamos el servidor que recibirá una funcion que a su vez recibirá un parametro
+const server = net.createServer(socket => {
+  //Activamos el evento cuando recibimos un dato
+  socket.on('data', data => {
+    //Imprimimos el dato recibido en forma de string
+    console.log(data.toString())
+    //El servidor manda una cadena
+    socket.write('Mundo?')
+  })
 })
 
-//Usando el objeto creado, hacemos la pregunta
-rl.question(
-  `Como quiere leer el fichero?
-  1. De forma asíncrona (default)
-  2. Con eventos
-  Seleccione una opcion: `,
-  value => {
-    console.log(`Selecciono ${value}\n\n`)
+//Verificamos si se ha producido un error
+server.on('error', err => {
+  throw err
+})
 
-    //En funcion del valor escogido, llamaremos a un script u otro pasandole el archivo a leer
-    switch (value) {
-      case '2':
-        events(file)
-        break
-      default:
-        async(file)
-    }
-    rl.close()
-  })
+//Si la conexión funciona, lo avisaremos por pantalla
+server.on('connect', () => console.log('socket connected'))
+
+//Arrancamos el servidor con los siguientes parametros y lo dejamos listo para recibir informacion
+server.listen(
+  {
+    host: 'localhost',
+    port: 8000,
+    exclusive: true
+  },
+  () => console.log('Servidor socket abierto en ', server.address())
+)

@@ -1,39 +1,56 @@
-1.- Creamos los archivos events.js y async.js con los códigos utilizados anteriormente
+1.- Añadimos dentro de package.json el siguiente código en la sección scripts:
+"client": "node --require babel-register src/client.js",
 
-2.- Reescribimos index.js con este código:
-//Importamos la libreria readline
-import readline from 'readline'
-//Le decimos que vamos a utilizar los scripts async.js y events.js
-import async from './async'
-import events from './events'
+2.- Creamos el servidor en index.js con este código
+//Importamos la libreria net que será la necesaria
+import net from 'net'
 
-//Guardamos el parámetro que corresponde al archivo que queremos leer
-const file = process.argv[2]
-
-//Creamos el objeto rl con los parámetros input y output
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
+//Creamos el servidor que recibirá una funcion que a su vez recibirá un parametro
+const server = net.createServer(socket => {
+  //Activamos el evento cuando recibimos un dato
+  socket.on('data', data => {
+    //Imprimimos el dato recibido en forma de string
+    console.log(data.toString())
+    //El servidor manda una cadena
+    socket.write('Mundo?')
+  })
 })
 
-//Usando el objeto creado, hacemos la pregunta
-rl.question(
-  `Como quiere leer el fichero?
-  1. De forma asíncrona (default)
-  2. Con eventos
-  Seleccione una opcion: `,
-  value => {
-    console.log(`Selecciono ${value}\n\n`)
+//Verificamos si se ha producido un error
+server.on('error', err => {
+  throw err
+})
 
-    //En funcion del valor escogido, llamaremos a un script u otro pasandole el archivo a leer
-    switch (value) {
-      case '2':
-        events(file)
-        break
-      default:
-        async(file)
-    }
-    rl.close()
-  })
+//Si la conexión funciona, lo avisaremos por pantalla
+server.on('connect', () => console.log('socket connected'))
 
-  3.- Ejecutamos npm run start sample.txt
+//Arrancamos el servidor con los siguientes parametros y lo dejamos listo para recibir informacion
+server.listen(
+  {
+    host: 'localhost',
+    port: 8000,
+    exclusive: true
+  },
+  () => console.log('Servidor socket abierto en ', server.address())
+)
+
+3.- Creamos el archivo client.js que será el cliente. Le escribimos dentro este código:
+//Importamos la libreria necesaria
+import net from 'net'
+
+//Generamos el socket
+const socket = net.Socket()
+//Lo conectamos al puerto 8000 de localhost
+socket.connect(8000, 'localhost')
+
+//Enviamos el mensaje
+socket.write('Hola?')
+
+//Mostramos por consola cuando recibimos el dato
+socket.on('data', data => console.log(data.toString()))
+
+4.- Para probar que todo funciona, necesitaremos dos terminales (o el mismo dividido en 2).
+En un terminal ejecutaremos el server con npm run start (Es el arrancador de index.js). Si
+todo funciona aparecerá por pantalla esto: Servidor socket abierto en  { address: '127.0.0.1', family: 'IPv4', port: 8000 }
+En el otro ejecutaremos el cliente con npm run client (Es el arrancador de client.js). Si todo funciona
+en el primer terminal mostrará Hola? y en el otro Mundo?
