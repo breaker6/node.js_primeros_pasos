@@ -1,30 +1,36 @@
 // Muestra el número total de lineas, y el número de palabras por linea
 
-//Importamos la libreria necesario
-import fs from 'fs'
-//Cogemos el segundo parámetro escrito en la instrucción en terminal
+//Importamos la libreria readline
+import readline from 'readline'
+//Le decimos que vamos a utilizar los scripts async.js y events.js
+import async from './async'
+import events from './events'
+
+//Guardamos el parámetro que corresponde al archivo que queremos leer
 const file = process.argv[2]
 
-//Leemos el fichero y cuando acabe ejecutamos la función recibiendo los datos escritos entre paréntesis
-//file es el fichero leido, err es un posible error y contents es lo que ha leido
-fs.readFile(file, (err, contents) => {
-  //Si da error, que nos informe por pantalla del problema y paramos la ejecución
-  if (err) {
-    return console.log(err)
-  }
-
-  //Convertimos contents en un string con toString y lo dividimos en parámetros del array lines con split
-  //guiandonos por los saltos de linea
-  const lines = contents.toString().split('\n')
-
-  //leemos cada una de las lineas
-  for (let line of lines) {
-    //El length de line indicará el tamaño de la linea en la que estamos en carácteres
-    console.log(`Número de caracteres por linea: ${line.length}`)
-  }
-
-  //El length de lines nos indicará el número de parámetros en el array
-  console.log(`\nNúmero total de lineas: ${lines.length}`)
+//Creamos el objeto rl con los parámetros input y output
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
 })
 
-console.log(`Fichero selecionado: ${file}\n`)
+//Usando el objeto creado, hacemos la pregunta
+rl.question(
+  `Como quiere leer el fichero?
+  1. De forma asíncrona (default)
+  2. Con eventos
+  Seleccione una opcion: `,
+  value => {
+    console.log(`Selecciono ${value}\n\n`)
+
+    //En funcion del valor escogido, llamaremos a un script u otro pasandole el archivo a leer
+    switch (value) {
+      case '2':
+        events(file)
+        break
+      default:
+        async(file)
+    }
+    rl.close()
+  })
