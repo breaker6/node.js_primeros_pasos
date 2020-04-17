@@ -1,15 +1,27 @@
-1.- Aquí probamos dos tipos de errores. Se capturan como eventos. Solo habría que escribirlos en el 
-código para que saltarán en la ejecución en caso de producirse. Se haría con este código:
+1.- Ejecutamos npm install --save-dev nodemon para instalar nodemon
 
-process.on('unhandledRejection', (err, p) => {
-  console.log('Custom Error: An unhandledRejection occurred')
-  console.log(`Custom Error: Rejection: ${err}`)
-})
+2.- Creamos dentro de src un fichero con el nombre nodemon.json que será el que almacenará la configuración
+de nodemon. Tendremos que escribir dentro de el este código:
+{
+	"restartable": "rs",
+	"verbose": true,
+	"ignore":[
+		"node_modules"
+	],
+	"watch": [
+		"src"
+	],
+	"ext": "js",
+	"execMap": {
+		"js": "node --require babel-register"
+	}
+}
+Ese código hará que el servidor se reinicie cada vez que haya un cambio ("restartable": "rs",),
+que muestre informacion de esos cambios ("verbose": true,), que no muestre los cambios
+realizados en node_modules ("ignore":["node_modules"],), que haga un watch de los ficheros de src 
+("watch": ["src"],), que solo escuche los cambios de los ficheros cuya extensión sea js ("ext": "js",)
+y que ejecute node con babel cuando detecte cambios ("execMap": {"js": "node --require babel-register"}).
 
-process.on('uncaughtException', err => {
-  console.log('Custom Error: An uncaughtException occurred')
-  console.log(`Custom Error: Rejection: ${err}`)
-})
-
-Ambos se lanzan en caso de haber un error mostrando el mensaje escrito en pantalla. Se ha escrito el
-código de prueba en index.js
+NOTA: babel-register tanto en este fichero como en package.json puede deber de ir dentro de comillas simples
+o no. En caso de Windows no es necesario comillas. En caso de Linux, sustituir esta última linea por esta:
+"js": "node --require 'babel-register'"
