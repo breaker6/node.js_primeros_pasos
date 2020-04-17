@@ -1,33 +1,18 @@
-//Creamos el servidor
+//Probamos dos tipos de error. Aquí lo que hacemos es capturar los errores con esos dos eventos
 
-//Importamos la libreria net que será la necesaria
-import net from 'net'
-
-//Creamos el servidor que recibirá una funcion que a su vez recibirá un parametro
-const server = net.createServer(socket => {
-  //Activamos el evento cuando recibimos un dato
-  socket.on('data', data => {
-    //Imprimimos el dato recibido en forma de string
-    console.log(data.toString())
-    //El servidor manda una cadena
-    socket.write('Mundo?')
-  })
+process.on('unhandledRejection', (err, p) => {
+  console.log('Custom Error: An unhandledRejection occurred')
+  console.log(`Custom Error: Rejection: ${err}`)
 })
 
-//Verificamos si se ha producido un error
-server.on('error', err => {
-  throw err
+process.on('uncaughtException', err => {
+  console.log('Custom Error: An uncaughtException occurred')
+  console.log(`Custom Error: Rejection: ${err}`)
 })
 
-//Si la conexión funciona, lo avisaremos por pantalla
-server.on('connect', () => console.log('socket connected'))
+setTimeout(() => console.log('This will still run.'), 500)
 
-//Arrancamos el servidor con los siguientes parametros y lo dejamos listo para recibir informacion
-server.listen(
-  {
-    host: 'localhost',
-    port: 8000,
-    exclusive: true
-  },
-  () => console.log('Servidor socket abierto en ', server.address())
-)
+// El error es JSON.pasre
+Promise(resolve => JSON.pasre({ color: 'azul' }))
+// test()
+// throw 'casa'
