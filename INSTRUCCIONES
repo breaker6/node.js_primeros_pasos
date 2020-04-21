@@ -18,3 +18,27 @@ server.listen(8000, 'localhost', err => {
 
 3.- Introducimos en el navegador la url http://localhost:8000/ y se nos mostrará la resupuesta
 del server (response.write).
+
+4.- Sustituimos el codigo en index.js por este:
+import http from 'http'
+
+const server = http.createServer((request, response) => {
+  if (request.method === 'GET') {
+    response.write('<h1>Metodo valido</h1>')
+    return response.end()
+  }
+
+  response.write('<h1>Esta intentando acceder con un metodo no valido</h1>')
+  return response.end()
+})
+
+server.listen(8000, 'localhost', err => {
+  if (err) {
+    return console.log('Error: ', err)
+  }
+
+  console.log('Server opened listen on http://localhost:8000')
+})
+
+5.- Ejecutamos npm run start. Al solicitar un metodo GET saldrá el mensaje de metodo valido. Si
+probamos con otro metodo, nos dirá metodo no valido 
