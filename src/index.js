@@ -2,15 +2,38 @@
 import http from 'http'
 //Importamos la libreria para leer ficheros
 import fs from 'fs'
+//Importamos la libreria de rutas
+import path from 'path'
 
-//Le decimos cual será el fichero que deberá ller
-const file = './src/index.html'
-//Creamos el servidor que recibe una petición y devuelve una respuesta
 const server = http.createServer((request, response) => {
-  response.writeHead(200, {'Content-Type': 'text/html; charset:UTF-8'
-  })
-  //Leemos el fichero recibiendo un error o un contenido (que será file)
-  fs.readFile(file, (err, content) => {
+   //Definimos un path que viene definido por la ruta
+   let filePath = request.url
+   //Si filePath que estoy utilizando es '/' usaremos index.html
+   if (filePath === '/'){
+       filePath = 'index.html'
+   }
+   //Le concatenamos la raiz /src para tener la ruta completa (Lo hacemos porque el fichero no esta
+   //en la raiz)
+   filePath = `./src/${filePath}`
+
+   //Comprobamos la extension del fichero
+   const extname = path.extname(filePath)
+
+   let contentType
+   //Dependiendo de la extensión haremos un tratamiento a la salida u otro (modificando el contentType)
+   switch (extname){
+       case '.css':
+           contentType = 'text/css'
+           break;
+        case '.html':
+            contentType = 'text/html'
+            break;
+   }
+   //Escribimos la cabecera del write teniendo en cuenta la variable contentType obtenida en el switch anterior
+   response.writeHead(200, { 'Content-Type': `${contentType}; charset=UTF-8`})
+
+   //Leemos el fichero almacenado en filePath
+   fs.readFile(filePath, (err, content) => {
     if (err){
       return console.log(err)
     }

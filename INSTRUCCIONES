@@ -98,3 +98,75 @@ server.listen(8000, 'localhost', err => {
 </html>
 
 10.- Ejecutamos npm run start para ejecutarlo. Ahora index nos devolvera el html creado.
+
+11.- Pasamos el código de index.js a index_pruebas_devolviendo_html.js (para mantener una copia de seguridad
+de lo que estamos haciendo y trabajar con el index limpio).
+
+12.- Añadimos en index.html el enlace al archivo de estilos (<link rel="stylesheet" href="./styles.css">)
+
+13.- Creamos un archivo llamaso styles.css y le introducimos este código:
+html, body {
+    height: 100%;
+}
+body {
+    background-color: #e8e8e8;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+}
+h1 {
+    text-align: center;
+}
+
+14.- Introducimos este código en index.js:
+//Importamos la libreria http
+import http from 'http'
+//Importamos la libreria para leer ficheros
+import fs from 'fs'
+//Importamos la libreria de rutas
+import path from 'path'
+
+const server = http.createServer((request, response) => {
+   let filePath = request.url
+   if (filePath === '/'){
+       filePath = 'index.html'
+   }
+   filePath = `./src/${filePath}`
+
+   const extname = path.extname(filePath)
+
+   let contentType
+   switch (extname){
+       case '.css':
+           contentType = 'text/css'
+           break;
+        case '.html':
+            contentType = 'text/html'
+            break;
+   }
+
+   response.writeHead(200, { 'Content-Type': `${contentType}; charset=UTF-8`})
+
+   fs.readFile(filePath, (err, content) => {
+    if (err){
+      return console.log(err)
+    }
+    //Si no hay error, mandaremos content como resupuesta y cerraremos la respuesta
+    response.write(content)
+    response.end()
+  })
+})
+
+//Definimos donde esta el servidor. 8000 es el puerto
+server.listen(8000, 'localhost', err => {
+  //Si se produce un error saldremos y mostraremos un mensaje  
+  if (err) {
+    return console.log('Error: ', err)
+  }
+  //Si el servidor funciona, lo mostraremos por pantalla
+  console.log('Server opened listen on http://localhost:8000')
+})
+
+15.- Ejecutamos npm run start en el terminal y accedemos a la url http://localhost:8000/ desde
+el terminal para visualizar el html con los estilos
