@@ -1,27 +1,20 @@
-1.- Ejecutamos npm install --save-dev nodemon para instalar nodemon
+1.- Editamos index.js y le metemos este código:
+import http from 'http'
 
-2.- Creamos dentro de src un fichero con el nombre nodemon.json que será el que almacenará la configuración
-de nodemon. Tendremos que escribir dentro de el este código:
-{
-	"restartable": "rs",
-	"verbose": true,
-	"ignore":[
-		"node_modules"
-	],
-	"watch": [
-		"src"
-	],
-	"ext": "js",
-	"execMap": {
-		"js": "node --require babel-register"
-	}
-}
-Ese código hará que el servidor se reinicie cada vez que haya un cambio ("restartable": "rs",),
-que muestre informacion de esos cambios ("verbose": true,), que no muestre los cambios
-realizados en node_modules ("ignore":["node_modules"],), que haga un watch de los ficheros de src 
-("watch": ["src"],), que solo escuche los cambios de los ficheros cuya extensión sea js ("ext": "js",)
-y que ejecute node con babel cuando detecte cambios ("execMap": {"js": "node --require babel-register"}).
+const server = http.createServer((request, response) => {
+  response.write('<h1>Curso NodeJS de OpenWebinars!</h1>')
+  response.end()
+})
 
-NOTA: babel-register tanto en este fichero como en package.json puede deber de ir dentro de comillas simples
-o no. En caso de Windows no es necesario comillas. En caso de Linux, sustituir esta última linea por esta:
-"js": "node --require 'babel-register'"
+server.listen(8000, 'localhost', err => {
+  if (err) {
+    return console.log('Error: ', err)
+  }
+
+  console.log('Server opened listen on http://localhost:8000')
+})
+
+2.- Ejecutamos en el terminal npm run start para ejecutar el servidor.
+
+3.- Introducimos en el navegador la url http://localhost:8000/ y se nos mostrará la resupuesta
+del server (response.write).
