@@ -5,6 +5,10 @@ import http from 'http'
 const server = http.createServer((request, response) => {
   //response.write('<h1>Curso NodeJS de OpenWebinars!</h1>')
   //response.end()
+  //Escribimos la cabecera del documento y definimos los parametros
+  //a enviar. Los parametros son 200 (todo ha ido bien) y el tipo de
+  //respuesta que envia (en este caso un html con codificacion UTF8)
+  response.writeHead(200, { 'Content-Type': 'text/html; charset=UTF-8' })
   //Si la petición se está haciendo con un GET escribimos Metodo valido
   if (request.method === 'GET') {
     response.write('<h1>Metodo valido</h1>')

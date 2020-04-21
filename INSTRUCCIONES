@@ -41,4 +41,8 @@ server.listen(8000, 'localhost', err => {
 })
 
 5.- Ejecutamos npm run start. Al solicitar un metodo GET saldrá el mensaje de metodo valido. Si
-probamos con otro metodo, nos dirá metodo no valido 
+probamos con otro metodo, nos dirá metodo no valido
+
+6.- Añadimos la cabecera del documento. Para ello añadimos este código justo encima de la comprobacion
+del GET (para escribirla antes que cualquier codigo HTML):
+response.writeHead(200, { 'Content-Type': 'text/html; charset=UTF-8' })
