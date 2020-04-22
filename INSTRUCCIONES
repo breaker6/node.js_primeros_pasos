@@ -1,172 +1,50 @@
-1.- Editamos index.js y le metemos este código:
-import http from 'http'
+1.- Añadimos estas lineas en la seccion devDepencies del package.json para añadir el soporte a postgres:
+"pg": "^6.4.2",
+"pg-hstore": "^2.3.2",
+"sequelize": "^4.28.6",
+"standard": "^10.0.3"
 
-const server = http.createServer((request, response) => {
-  response.write('<h1>Curso NodeJS de OpenWebinars!</h1>')
-  response.end()
-})
+2.- Introducimos este codigo en index.js:
+import Sequelize from 'Sequelize'
 
-server.listen(8000, 'localhost', err => {
-  if (err) {
-    return console.log('Error: ', err)
+const sequelize = new Sequelize('films', '', '', {
+  host: 'localhost',
+  dialect: 'postgres',
+  pool: {
+    max: 5,
+    min: 0,
+    idle: 10000
   }
-
-  console.log('Server opened listen on http://localhost:8000')
 })
 
-2.- Ejecutamos en el terminal npm run start para ejecutar el servidor.
-
-3.- Introducimos en el navegador la url http://localhost:8000/ y se nos mostrará la resupuesta
-del server (response.write).
-
-4.- Sustituimos el codigo en index.js por este:
-import http from 'http'
-
-const server = http.createServer((request, response) => {
-  if (request.method === 'GET') {
-    response.write('<h1>Metodo valido</h1>')
-    return response.end()
-  }
-
-  response.write('<h1>Esta intentando acceder con un metodo no valido</h1>')
-  return response.end()
-})
-
-server.listen(8000, 'localhost', err => {
-  if (err) {
-    return console.log('Error: ', err)
-  }
-
-  console.log('Server opened listen on http://localhost:8000')
-})
-
-5.- Ejecutamos npm run start. Al solicitar un metodo GET saldrá el mensaje de metodo valido. Si
-probamos con otro metodo, nos dirá metodo no valido
-
-6.- Añadimos la cabecera del documento. Para ello añadimos este código justo encima de la comprobacion
-del GET (para escribirla antes que cualquier codigo HTML):
-response.writeHead(200, { 'Content-Type': 'text/html; charset=UTF-8' })
-
-7.- Pasamos el código de index.js a index_pruebas_server.js (para mantener una copia de seguridad
-de lo que estamos haciendo y trabajar con el index limpio).
-
-8.- Escribimos este código en index.js:
-//Importamos la libreria http
-import http from 'http'
-//Importamos la libreria para leer ficheros
-import fs from 'fs'
-
-//Le decimos cual será el fichero que deberá ller
-const file = './src/index.html'
-//Creamos el servidor que recibe una petición y devuelve una respuesta
-const server = http.createServer((request, response) => {
-  response.writeHead(200, {'Content-Type': 'text/html; charset:UTF-8'
-  })
-  //Leemos el fichero recibiendo un error o un contenido (que será file)
-  fs.readFile(file, (err, content) => {
-    if (err){
-      return console.log(err)
+const Film = sequelize.define(
+  'Film',
+  {
+    id: {
+      type: Sequelize.INTEGER,
+      autoIncrement: true,
+      field: 'id',
+      primaryKey: true
+    },
+    title: {
+      type: Sequelize.STRING,
+      field: 'title'
+    },
+    poster: {
+      type: Sequelize.STRING,
+      field: 'poster'
     }
-    //Si no hay error, mandaremos content como resupuesta y cerraremos la respuesta
-    response.write(content)
-    response.end()
-  })
-})
-
-//Definimos donde esta el servidor. 8000 es el puerto
-server.listen(8000, 'localhost', err => {
-  //Si se produce un error saldremos y mostraremos un mensaje  
-  if (err) {
-    return console.log('Error: ', err)
+  },
+  {
+    freezeTableName: true
   }
-  //Si el servidor funciona, lo mostraremos por pantalla
-  console.log('Server opened listen on http://localhost:8000')
-})
+)
 
-9.- Creamos un archivo llamado index.html y le introducimos las siguientes etiquetas:
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name= "viewport" content="width=device-width" initial-scale=1.0>
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Prueba de INDEX en node.js</title>
-</head>
-<body>
-    <h1>Titulo h1</h1>
-</body>
-</html>
-
-10.- Ejecutamos npm run start para ejecutarlo. Ahora index nos devolvera el html creado.
-
-11.- Pasamos el código de index.js a index_pruebas_devolviendo_html.js (para mantener una copia de seguridad
-de lo que estamos haciendo y trabajar con el index limpio).
-
-12.- Añadimos en index.html el enlace al archivo de estilos (<link rel="stylesheet" href="./styles.css">)
-
-13.- Creamos un archivo llamaso styles.css y le introducimos este código:
-html, body {
-    height: 100%;
-}
-body {
-    background-color: #e8e8e8;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    justify-content: center;
-}
-h1 {
-    text-align: center;
-}
-
-14.- Introducimos este código en index.js:
-//Importamos la libreria http
-import http from 'http'
-//Importamos la libreria para leer ficheros
-import fs from 'fs'
-//Importamos la libreria de rutas
-import path from 'path'
-
-const server = http.createServer((request, response) => {
-   let filePath = request.url
-   if (filePath === '/'){
-       filePath = 'index.html'
-   }
-   filePath = `./src/${filePath}`
-
-   const extname = path.extname(filePath)
-
-   let contentType
-   switch (extname){
-       case '.css':
-           contentType = 'text/css'
-           break;
-        case '.html':
-            contentType = 'text/html'
-            break;
-   }
-
-   response.writeHead(200, { 'Content-Type': `${contentType}; charset=UTF-8`})
-
-   fs.readFile(filePath, (err, content) => {
-    if (err){
-      return console.log(err)
-    }
-    //Si no hay error, mandaremos content como resupuesta y cerraremos la respuesta
-    response.write(content)
-    response.end()
+Film.sync({ force: true })
+  .then(() => Film.create({
+    title: 'Star Wars: The Last Jedi',
+    poster: 'https://lumiere-a.akamaihd.net/v1/images/the-last-jedi-theatrical-poster-film-page_bca06283.jpeg?region=0%2C0%2C480%2C711'
   })
-})
+)
 
-//Definimos donde esta el servidor. 8000 es el puerto
-server.listen(8000, 'localhost', err => {
-  //Si se produce un error saldremos y mostraremos un mensaje  
-  if (err) {
-    return console.log('Error: ', err)
-  }
-  //Si el servidor funciona, lo mostraremos por pantalla
-  console.log('Server opened listen on http://localhost:8000')
-})
-
-15.- Ejecutamos npm run start en el terminal y accedemos a la url http://localhost:8000/ desde
-el terminal para visualizar el html con los estilos
+3.- Ejecutamos npm run start

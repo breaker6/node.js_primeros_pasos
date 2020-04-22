@@ -1,54 +1,53 @@
-//Importamos la libreria http
-import http from 'http'
-//Importamos la libreria para leer ficheros
-import fs from 'fs'
-//Importamos la libreria de rutas
-import path from 'path'
+//importamos la libreria Sequalize
+import Sequelize from 'Sequelize'
 
-const server = http.createServer((request, response) => {
-   //Definimos un path que viene definido por la ruta
-   let filePath = request.url
-   //Si filePath que estoy utilizando es '/' usaremos index.html
-   if (filePath === '/'){
-       filePath = 'index.html'
-   }
-   //Le concatenamos la raiz /src para tener la ruta completa (Lo hacemos porque el fichero no esta
-   //en la raiz)
-   filePath = `./src/${filePath}`
-
-   //Comprobamos la extension del fichero
-   const extname = path.extname(filePath)
-
-   let contentType
-   //Dependiendo de la extensión haremos un tratamiento a la salida u otro (modificando el contentType)
-   switch (extname){
-       case '.css':
-           contentType = 'text/css'
-           break;
-        case '.html':
-            contentType = 'text/html'
-            break;
-   }
-   //Escribimos la cabecera del write teniendo en cuenta la variable contentType obtenida en el switch anterior
-   response.writeHead(200, { 'Content-Type': `${contentType}; charset=UTF-8`})
-
-   //Leemos el fichero almacenado en filePath
-   fs.readFile(filePath, (err, content) => {
-    if (err){
-      return console.log(err)
-    }
-    //Si no hay error, mandaremos content como resupuesta y cerraremos la respuesta
-    response.write(content)
-    response.end()
-  })
-})
-
-//Definimos donde esta el servidor. 8000 es el puerto
-server.listen(8000, 'localhost', err => {
-  //Si se produce un error saldremos y mostraremos un mensaje  
-  if (err) {
-    return console.log('Error: ', err)
+//Creamos instacia de sequelize diciendo donde debe conectarse
+//Recibe la base de datos donde vamos a conectar (peliculas) y un usuario y una contraseña
+//(están en blanco porque no tiene)
+const sequelize = new Sequelize('peliculas', '', '', {
+  //host donde esta la base de datos
+  host: 'localhost',
+  //El dialecto es el driver necesario
+  dialect: 'postgres',
+  //Como gestiona las peticiones
+  pool: {
+    max: 5,
+    min: 0,
+    idle: 10000
   }
-  //Si el servidor funciona, lo mostraremos por pantalla
-  console.log('Server opened listen on http://localhost:8000')
 })
+
+//Creamos un modelo llamado pelicula y lo llamaremos pelicula
+const Pelicula = sequelize.define(
+  'Pelicula',
+  {
+    //Definimos los campos que tendrá. Sequelize traducirá todo al lenguaje de Postgres
+    id: {
+      type: Sequelize.INTEGER,
+      autoIncrement: true,
+      field: 'id',
+      primaryKey: true
+    },
+    title: {
+      type: Sequelize.STRING,
+      field: 'title'
+    },
+    poster: {
+      type: Sequelize.STRING,
+      field: 'poster'
+    }
+  },
+  {
+    //Propiedad. Usa el nombre de la tabla en singular
+    freezeTableName: true
+  }
+)
+
+//Le decimos que se sincronice de forma obligatoria
+Pelicula.sync({ force: true })
+  //Una vez sincronizado, creamos el elemento con estos cambios
+  .then(() => Film.create({
+    title: 'Star Wars: The Last Jedi',
+    poster: 'https://lumiere-a.akamaihd.net/v1/images/the-last-jedi-theatrical-poster-film-page_bca06283.jpeg?region=0%2C0%2C480%2C711'
+  })
+)
