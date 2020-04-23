@@ -1,50 +1,31 @@
-1.- Añadimos estas lineas en la seccion devDepencies del package.json para añadir el soporte a postgres:
-"pg": "^6.4.2",
-"pg-hstore": "^2.3.2",
-"sequelize": "^4.28.6",
-"standard": "^10.0.3"
+1.- Ejecutamos en el terminal npm install --save express para instalar express
 
-2.- Introducimos este codigo en index.js:
-import Sequelize from 'Sequelize'
+2.- En el json.package agregar esta seccion entre scripts y devdependencies para agregar express como dependencia:
+ "dependencies": {
+    "express": "^4.16.2"
+  },
+  Si ya la tienes puesta, lo dejas como está
 
-const sequelize = new Sequelize('films', '', '', {
-  host: 'localhost',
-  dialect: 'postgres',
-  pool: {
-    max: 5,
-    min: 0,
-    idle: 10000
-  }
+3.- Introducimos este codigo en index.js:
+//Importamos la libreria de express
+import express from 'express'
+
+//Cargamos una instancia de express dentro de una variable
+const app = express()
+
+//Definimos una ruta a la que se accede mediante el metodo get y esta en el raiz
+//Recibe dos pàrametros, request y response
+app.get('/', (req, res) => {
+  //Escribimos cuando el usuario entra un hola mundo para verificar que se está renderizando correctamente
+  res.end('Hola Mundo!')
 })
 
-const Film = sequelize.define(
-  'Film',
-  {
-    id: {
-      type: Sequelize.INTEGER,
-      autoIncrement: true,
-      field: 'id',
-      primaryKey: true
-    },
-    title: {
-      type: Sequelize.STRING,
-      field: 'title'
-    },
-    poster: {
-      type: Sequelize.STRING,
-      field: 'poster'
-    }
-  },
-  {
-    freezeTableName: true
-  }
-)
+//Le decimos a express que escuche el puerto 9000
+app.listen('9000', () => {
+  //Cuando el servidor arranca nos mostrará el siguiente mensaje
+  console.log('Server opened listen on http://localhost:9000')
+})
 
-Film.sync({ force: true })
-  .then(() => Film.create({
-    title: 'Star Wars: The Last Jedi',
-    poster: 'https://lumiere-a.akamaihd.net/v1/images/the-last-jedi-theatrical-poster-film-page_bca06283.jpeg?region=0%2C0%2C480%2C711'
-  })
-)
+4.- Ejecutamos npm run start. El terminal debería de avisarnos de que el servidor está arrancado
 
-3.- Ejecutamos npm run start
+5.- Accedemos en el navegador a la url http://localhost:9000. Deberiamos recibir el mensaje de Hola Mundo

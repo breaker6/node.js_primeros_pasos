@@ -24,10 +24,12 @@
   "homepage": "https://github.com/breaker6/node.js_primeros_pasos#readme",
   "dependencies": {
     "babel-cli": "^6.26.0",
+    "express": "^4.17.1",
     "fs": "0.0.1-security",
     "fs2": "^0.3.7",
     "readline": "^1.3.0"
   },
+  
   "devDependencies": {
     "babel": "^6.23.0",
     "babel-preset-env": "^1.7.0",
