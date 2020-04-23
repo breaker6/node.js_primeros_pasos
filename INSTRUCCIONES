@@ -75,3 +75,76 @@ app.listen('9000', () => {
 8.- Ejecutamos npm run start. El terminal debería de avisarnos de que el servidor está arrancado
 
 9.- Accedemos en el navegador a la url http://localhost:9000. Deberiamos recibir el mensaje de Hola Mundo
+
+10.- Vamos a añadir un template en pug. Para ello, instalamos pug con el siguiente comando en terminal:
+npm install --save pug
+
+11.- Creamos dentro de src un directorio llamado views
+
+12.- Dentro de el creamos el archivo home.pug con este codigo:
+html
+  head
+    title Curso NodeJS de OpenWebinars!
+  body
+    h1 Curso NodeJS de OpenWebinars!
+
+También creamos un archivo homeVars.pug con este codigo:
+html
+  head
+    title!= title
+  body
+    h1!= message
+
+13.- Cambiamos el codigo de index.js por este:
+//Importamos la libreria de express
+import express from 'express'
+//Importamos body-parser.Es un middleware que parsea de forma automatica la respuesta del servidor
+//metiendola en un campo body dentro del response
+import bodyParser from 'body-parser'
+//Importamos la libreria morgan. Morgan esta pensado como middleware
+import logger from 'morgan'
+//Importamos la libreria requerida para rutas
+import path from 'path'
+
+//Cargamos una instancia de express dentro de una variable
+const app = express()
+
+//Desactivar el aviso de que nuestra web esta hecho con express en la cabecera del servidor
+app.disable('x-powered-by')
+
+//Le definimos que en el entorno en el que estamos es development
+app.set('env', 'development')
+
+//Genera un log que nos dará una serie de datos en el servidor. Combined es el tipo de log
+app.use(logger('combined'))
+//Le decimos que use body-parser y que devuelva un json
+app.use(bodyParser.json())
+//Le decimos que el codificado no sea extendido
+app.use(bodyParser.urlencoded({ extended: false }))
+
+//Le decimos en que ruta están las vistas a utilizar. Este será el resultado de concatenar
+//el directorio actual en el que estamos mas views
+app.set('views', path.join(__dirname, 'views'))
+//Le definimos que el motor de plantillas a utilizar (view engine). En este caso es pug
+app.set('view engine', 'pug')
+
+//Definimos una ruta a la que se accede mediante el metodo get y esta en el raiz
+//Recibe dos pàrametros, request y response
+app.get('/', (req, res) => {
+  //Buscará e intentará renderizar un archivo home.pug
+  res.render('home')
+  //Renderizamos homeVars.pug pasandole las variables title y message
+  //res.render('homeVars', { title: 'Open Webinars!', message: 'Curso NodeJS!' })
+})
+
+//Le decimos a express que escuche el puerto 9000
+app.listen('9000', () => {
+  //Cuando el servidor arranca nos mostrará el siguiente mensaje
+  console.log('Server opened listen on http://localhost:9000')
+})
+
+En app.get será donde ejecutaremos el render de la plantilla. Se puede hacer de dos maneras:
+de forma fija (esta activo en el codigo con res.render('home')) o con variables que recibe 
+(esta comentado en el codigo res.render('homeVars', { title: 'Open Webinars!', message: 'Curso NodeJS!' }))
+
+14.- Ejecutamos npm run start para iniciar el servidor y accedemos a la url http://localhost:9000

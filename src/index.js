@@ -5,6 +5,8 @@ import express from 'express'
 import bodyParser from 'body-parser'
 //Importamos la libreria morgan. Morgan esta pensado como middleware
 import logger from 'morgan'
+//Importamos la libreria requerida para rutas
+import path from 'path'
 
 //Cargamos una instancia de express dentro de una variable
 const app = express()
@@ -22,11 +24,19 @@ app.use(bodyParser.json())
 //Le decimos que el codificado no sea extendido
 app.use(bodyParser.urlencoded({ extended: false }))
 
+//Le decimos en que ruta están las vistas a utilizar. Este será el resultado de concatenar
+//el directorio actual en el que estamos mas views
+app.set('views', path.join(__dirname, 'views'))
+//Le definimos que el motor de plantillas a utilizar (view engine). En este caso es pug
+app.set('view engine', 'pug')
+
 //Definimos una ruta a la que se accede mediante el metodo get y esta en el raiz
 //Recibe dos pàrametros, request y response
 app.get('/', (req, res) => {
-  //Cuando el servidor arranca nos mostrará el siguiente mensaje
-  res.end('Hola Mundo!')
+  //Buscará e intentará renderizar un archivo home.pug
+  res.render('home')
+  //Renderizamos homeVars.pug pasandole las variables title y message
+  //res.render('homeVars', { title: 'Open Webinars!', message: 'Curso NodeJS!' })
 })
 
 //Le decimos a express que escuche el puerto 9000
