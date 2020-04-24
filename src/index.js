@@ -30,14 +30,37 @@ app.set('views', path.join(__dirname, 'views'))
 //Le definimos que el motor de plantillas a utilizar (view engine). En este caso es pug
 app.set('view engine', 'pug')
 
+//RUTAS
 //Definimos una ruta a la que se accede mediante el metodo get y esta en el raiz
 //Recibe dos pàrametros, request y response
-app.get('/', (req, res) => {
+//app.get('/', (req, res) => {
   //Buscará e intentará renderizar un archivo home.pug
-  res.render('home')
+  //res.render('home')
   //Renderizamos homeVars.pug pasandole las variables title y message
-  //res.render('homeVars', { title: 'Open Webinars!', message: 'Curso NodeJS!' })
-})
+  //res.render('homeVars', { title: 'Mi primera página en Node!', message: 'Mis primeras pruebas!' })
+//})
+
+//Ejemplo de ruta a raiz escribiendo codigo html y con enlace a nueva ruta
+app.get('/', (req, res, next) => {
+    res.write(`
+      <h1>Mi primera página en Node!</h1>
+      <a href="/indice">Indice</a>
+    `)
+    //Renderizamos una pagina que queramos
+    //res.render('home')
+    res.end()
+  })
+  
+  //Ejemplo de ruta dentro de raiz
+  app.get('/indice', (req, res, next) => {
+    res.write(`
+      <h1>Mi primera página en Node!</h1>
+      <h2>Indice de la web</h2>
+    `)
+    //Renderizando paginas que queramos con variables
+    //res.render('homeVars', { title: 'Open Webinars!', message: 'Bienvenido Banylin Monroe!' })
+    //res.end()
+  })
 
 //Le decimos a express que escuche el puerto 9000
 app.listen('9000', () => {

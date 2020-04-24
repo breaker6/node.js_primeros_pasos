@@ -148,3 +148,24 @@ de forma fija (esta activo en el codigo con res.render('home')) o con variables 
 (esta comentado en el codigo res.render('homeVars', { title: 'Open Webinars!', message: 'Curso NodeJS!' }))
 
 14.- Ejecutamos npm run start para iniciar el servidor y accedemos a la url http://localhost:9000
+
+15.- Ahora añadiremos mas rutas para probar. Para ello, insertaremos este código antes del listen:
+//Ejemplo de ruta a raiz escribiendo codigo html y con enlace a nueva ruta
+app.get('/', (req, res, next) => {
+    res.write(`
+      <h1>Mi primera página en Node!</h1>
+      <a href="/indice">Indice</a>
+    `)
+    res.end()
+  })
+  
+  //Ejemplo de ruta dentro de raiz
+  app.get('/indice', (req, res, next) => {
+    res.write(`
+      <h1>Mi primera página en Node!</h1>
+      <h2>Indice de la web</h2>
+    `)
+    res.end()
+  })
+
+  Después solo hay que ejecutar npm run start y acceder a la url para ver los resultados
