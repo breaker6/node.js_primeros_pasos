@@ -410,3 +410,28 @@ app.use(
 )
 
 26.- Ejecutamos npm run start y accedemos a la url para ver los resultados
+
+27.- Ahora añadimos rutas parametizables con lo que podremos recibir valores desde la propia url 
+de la ruta. Para ello añadiremos la siguiente ruta en index.js entre la ultima ruta y el app.use:
+//Le decimos que el valor que reciba en la url lo guarde en la variable user
+app.get('/:user', (req, res, next) => {
+  res.render('user', {
+    title: 'Iniciacion NodeJS - Pagina de usuario',
+    //con req.paramas.user accederemos a esa variable que almacena el parametro recibido por url
+    message: `Bienvenido usuario ${req.params.user}`
+  })
+})
+
+28.- Creamos la ruta correspondiente al user. Para ello, creamos dentro de views el archivo 
+user.pug con este código:
+html
+  include includes/head.pug
+  body
+    include includes/header.pug
+    .container
+      h1.bd-title!= message
+
+    include includes/footer.pug
+
+29.- Ejecutamos npm run start y accedemos a la url http://localhost:9000/nombre-usuario donde
+nombre-usuario será el nombre con el que nos saludará la aplicación

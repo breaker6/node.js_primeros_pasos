@@ -32,17 +32,26 @@ app.set('view engine', 'pug')
 
 //RUTAS
 app.get('/', (req, res, next) => {
-    res.render('home', {
-      title: 'NodeJS',
-      message: 'Inicio en NodeJS y pruebas!'
-    })
+  res.render('home', {
+  title: 'NodeJS',
+  message: 'Inicio en NodeJS y pruebas!'
   })
+})
   
-  app.get('/temario', (req, res, next) => {
-    res.render('temario', {
-      title: 'NodeJS'
-    })
+app.get('/temario', (req, res, next) => {
+  res.render('temario', {
+  title: 'NodeJS'
   })
+})
+
+//Le decimos que el valor que reciba en la url lo guarde en la variable user
+app.get('/:user', (req, res, next) => {
+  res.render('user', {
+    title: 'Iniciacion NodeJS - Pagina de usuario',
+    //con req.paramas.user accederemos a esa variable que almacena el parametro recibido por url
+    message: `Bienvenido usuario ${req.params.user}`
+  })
+})
 
 //Le decimos que cuando detecte una petición a /static tiene que devolver un archivo del
 //directorio public. Gracias a esto podremos cargar el css.
