@@ -48,7 +48,7 @@ app.use((req, res, next) => {
     title: 'NodeJS',
     message: `La ruta no existe!!!!!`
   })
-  next(err)
+  next()
 })
 
 //Le decimos a express que escuche el puerto 9000

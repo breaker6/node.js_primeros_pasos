@@ -521,3 +521,7 @@ router(app)
 import router from './router'
 
 39.- Ejecutamos npm start y accedemos a la url
+
+40.- Ahora vamos a instalar las librerias para hacer testing. Para ello instalaremos una serie
+de aplicaciones utilizando el siguiente comando en el terminal:
+npm i --save-dev got chai cheerio mocha
