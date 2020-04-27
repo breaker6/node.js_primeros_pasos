@@ -44,6 +44,13 @@ app.get('/', (req, res, next) => {
     })
   })
 
+//Le decimos que cuando detecte una petición a /static tiene que devolver un archivo del
+//directorio public. Gracias a esto podremos cargar el css.
+app.use(
+  '/static',
+  express.static(path.join(__dirname, 'public'))
+)
+
 //Le decimos a express que escuche el puerto 9000
 app.listen('9000', () => {
   //Cuando el servidor arranca nos mostrará el siguiente mensaje
