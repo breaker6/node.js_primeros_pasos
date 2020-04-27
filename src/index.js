@@ -7,6 +7,8 @@ import bodyParser from 'body-parser'
 import logger from 'morgan'
 //Importamos la libreria requerida para rutas
 import path from 'path'
+//Importamos la libreria que gestiona el enrutado
+import router from './router'
 
 //Cargamos una instancia de express dentro de una variable
 const app = express()
@@ -31,27 +33,7 @@ app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'pug')
 
 //RUTAS
-app.get('/', (req, res, next) => {
-  res.render('home', {
-  title: 'NodeJS',
-  message: 'Inicio en NodeJS y pruebas!'
-  })
-})
-  
-app.get('/temario', (req, res, next) => {
-  res.render('temario', {
-  title: 'NodeJS'
-  })
-})
-
-//Le decimos que el valor que reciba en la url lo guarde en la variable user
-app.get('/:user', (req, res, next) => {
-  res.render('user', {
-    title: 'Iniciacion NodeJS - Pagina de usuario',
-    //con req.paramas.user accederemos a esa variable que almacena el parametro recibido por url
-    message: `Bienvenido usuario ${req.params.user}`
-  })
-})
+router(app)
 
 //Le decimos que cuando detecte una petición a /static tiene que devolver un archivo del
 //directorio public. Gracias a esto podremos cargar el css.
@@ -59,6 +41,15 @@ app.use(
   '/static',
   express.static(path.join(__dirname, 'public'))
 )
+
+//Ejecutaremos esta ruta si se accede a una ruta no definida
+app.use((req, res, next) => {
+  res.render('404', {
+    title: 'NodeJS',
+    message: `La ruta no existe!!!!!`
+  })
+  next(err)
+})
 
 //Le decimos a express que escuche el puerto 9000
 app.listen('9000', () => {

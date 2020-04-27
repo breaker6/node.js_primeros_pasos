@@ -435,3 +435,89 @@ html
 
 29.- Ejecutamos npm run start y accedemos a la url http://localhost:9000/nombre-usuario donde
 nombre-usuario será el nombre con el que nos saludará la aplicación
+
+30.- Ahora crearemos una ruta de error por si el usuario entra en una ruta no definida. Para ello 
+añadimos en index.js un middleware entre el app.use y el app.listen con el siguiente codigo:
+//Ejecutaremos esta ruta si se accede a una ruta no definida
+app.use((req, res, next) => {
+  res.render('404', {
+    title: 'NodeJS',
+    message: `La ruta no existe!!!!!`
+  })
+  next(err)
+})
+
+31.- Creamos dentro de views el layout 404.pug con este codigo:
+html
+  include includes/head.pug
+  body
+    include includes/header.pug
+    .container
+      h1.bd-title!= message
+
+    include includes/footer.pug
+
+32.- Ahora modularizaremos la aplicacion en express. Para ello, moveremos las rutas a otro 
+archivo. Creamos dentro de src un archivo llamado router.js con este codigo:
+import home from './routes/home'
+import units from './routes/units'
+import user from './routes/user'
+
+export default app => {
+  app.use('/', home)
+  app.use('/temario', units)
+  app.use('/', user)
+}
+
+33.- Creamos un directorio dentro de src llamado routes y creamos dentro de el los archivos home.js,
+units.js y user.js.
+
+34.- Dentro de home.js introducimos este código:
+import express from 'express'
+
+//Le decimos a express que dentro de la variable router introduciremos rutas
+const router = express.Router()
+
+router.get('/', (req, res, next) => {
+  res.render('home', {
+    title: 'NodeJS',
+    message: 'Primeros pasos en NodeJS'
+  })
+})
+
+export default router
+
+35.- Dentro de units.js introducimos este código:
+import express from 'express'
+
+const router = express.Router()
+
+router.get('/', (req, res, next) => {
+  res.render('temario', {
+    title: 'NodeJS'
+  })
+})
+
+export default router
+
+36.- Dentro de user.js el siguiente codigo:
+import express from 'express'
+
+const router = express.Router()
+
+router.get('/:user', (req, res, next) => {
+  res.render('user', {
+    title: 'NodeJS',
+    message: `Bienvenido usuario ${req.params.user}`
+  })
+})
+
+export default router
+
+37.- En el index.js, quitaremos el codigo de las tres rutas que tenemos y lo sustituiremos por esta linea:
+router(app)
+
+38.- En la parte de arriba del index.js, al final de los import añadir este otro import:
+import router from './router'
+
+39.- Ejecutamos npm start y accedemos a la url
