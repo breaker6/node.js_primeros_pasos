@@ -1,527 +1,219 @@
-1.- Ejecutamos en el terminal npm install --save express para instalar express
+1.- Vamos a comenzar a crear nuestro primer servidor en el que albergaremos la api REST.
+Para ello, ejecutamos npm install --save express para instalar express
 
-2.- En el json.package agregar esta seccion entre scripts y devdependencies para agregar express como dependencia:
- "dependencies": {
-    "express": "^4.16.2"
+2.- Introducimos este código en index.js (el archivo tiene que estar vacio)
+//Importamos express
+import express from 'express'
+
+//Guardamos la instancia
+let _server
+
+//Generamos el objeto server con los metodos start y close
+const server = {
+  start () {
+    //Creamos el servidor en express
+    const app = express()
+
+    //Guardamos la instancia y le decimos que escuche el puerto 9000
+    _server = app.listen('9000', () => {
+      //Si el entorno en el que estamos ejecutando es distinto de test
+      if (process.env.NODE_ENV !== 'test') {
+        //Que nos avise cuando este arrancando
+        console.log('Server opened listen on http://localhost:9000')
+      }
+    })
   },
-  Si ya la tienes puesta, lo dejas como está
+  //En close cerramos la instancia del servidor
+  close () {
+    _server.close()
+  }
+}
 
-3.- Introducimos este codigo en index.js:
-//Importamos la libreria de express
-import express from 'express'
+//Exportamos el objeto server
+export default server
 
-//Cargamos una instancia de express dentro de una variable
-const app = express()
+//Si se utiliza como modulo principal, que ejecute server.start()
+if (!module.parent) {
+  server.start()
+}
 
-//Definimos una ruta a la que se accede mediante el metodo get y esta en el raiz
-//Recibe dos pàrametros, request y response
-app.get('/', (req, res) => {
-  //Escribimos cuando el usuario entra un hola mundo para verificar que se está renderizando correctamente
-  res.end('Hola Mundo!')
-})
+3.- Ejecutamos npm run start y comprobamos que no hay errores
 
-//Le decimos a express que escuche el puerto 9000
-app.listen('9000', () => {
-  //Cuando el servidor arranca nos mostrará el siguiente mensaje
-  console.log('Server opened listen on http://localhost:9000')
-})
+4.- Empezamos a configurar la API REST. Creamos dentro de src un fichero llamado config.js en el
+que almacenaremos toda la informacion de nuestro servidor.
 
-4.- Ejecutamos npm run start. El terminal debería de avisarnos de que el servidor está arrancado
+5.- Tendremos que instalar varios paquetes. Ejecutaremos en el terminal el siguiente comando:
+npm install --save body-parser cors morgan
 
-5.- Accedemos en el navegador a la url http://localhost:9000. Deberiamos recibir el mensaje de Hola Mundo
-
-6.- Ahora que ya está funcionando, vamos a configurarlo. Primero tendremos que instalar 
-morgan con el siguiente comando: npm install --save-dev morgan. Tambien tenemos que instalar 
-body-parser con este comando: npm install --save body-parser
-
-7.- Metemos este código en index.js:
-//Importamos la libreria de express
-import express from 'express'
-//Importamos body-parser.Es un middleware que parsea de forma automatica la respuesta del servidor
-//metiendola en un campo body dentro del response
+6.- Añadimos a config.js el siguiente codigo:
+//Importamos body-parser
 import bodyParser from 'body-parser'
-//Importamos la libreria morgan. Morgan esta pensado como middleware
+//Importamos el logger morgan
 import logger from 'morgan'
+//Importamos cors
+import cors from 'cors'
 
-//Cargamos una instancia de express dentro de una variable
-const app = express()
-
-//Desactivar el aviso de que nuestra web esta hecho con express en la cabecera del servidor
-app.disable('x-powered-by')
-
-//Le definimos que en el entorno en el que estamos es development
-app.set('env', 'development')
-
-//Genera un log que nos dará una serie de datos en el servidor. Combined es el tipo de log
-app.use(logger('combined'))
-//Le decimos que use body-parser y que devuelva un json
-app.use(bodyParser.json())
-//Le decimos que el codificado no sea extendido
-app.use(bodyParser.urlencoded({ extended: false }))
-
-//Definimos una ruta a la que se accede mediante el metodo get y esta en el raiz
-//Recibe dos pàrametros, request y response
-app.get('/', (req, res) => {
-  //Cuando el servidor arranca nos mostrará el siguiente mensaje
-  res.end('Hola Mundo!')
-})
-
-//Le decimos a express que escuche el puerto 9000
-app.listen('9000', () => {
-  //Cuando el servidor arranca nos mostrará el siguiente mensaje
-  console.log('Server opened listen on http://localhost:9000')
-})
-
-8.- Ejecutamos npm run start. El terminal debería de avisarnos de que el servidor está arrancado
-
-9.- Accedemos en el navegador a la url http://localhost:9000. Deberiamos recibir el mensaje de Hola Mundo
-
-10.- Vamos a añadir un template en pug. Para ello, instalamos pug con el siguiente comando en terminal:
-npm install --save pug
-
-11.- Creamos dentro de src un directorio llamado views
-
-12.- Dentro de el creamos el archivo home.pug con este codigo:
-html
-  head
-    title Curso NodeJS de OpenWebinars!
-  body
-    h1 Curso NodeJS de OpenWebinars!
-
-También creamos un archivo homeVars.pug con este codigo:
-html
-  head
-    title!= title
-  body
-    h1!= message
-
-13.- Cambiamos el codigo de index.js por este:
-//Importamos la libreria de express
-import express from 'express'
-//Importamos body-parser.Es un middleware que parsea de forma automatica la respuesta del servidor
-//metiendola en un campo body dentro del response
-import bodyParser from 'body-parser'
-//Importamos la libreria morgan. Morgan esta pensado como middleware
-import logger from 'morgan'
-//Importamos la libreria requerida para rutas
-import path from 'path'
-
-//Cargamos una instancia de express dentro de una variable
-const app = express()
-
-//Desactivar el aviso de que nuestra web esta hecho con express en la cabecera del servidor
-app.disable('x-powered-by')
-
-//Le definimos que en el entorno en el que estamos es development
-app.set('env', 'development')
-
-//Genera un log que nos dará una serie de datos en el servidor. Combined es el tipo de log
-app.use(logger('combined'))
-//Le decimos que use body-parser y que devuelva un json
-app.use(bodyParser.json())
-//Le decimos que el codificado no sea extendido
-app.use(bodyParser.urlencoded({ extended: false }))
-
-//Le decimos en que ruta están las vistas a utilizar. Este será el resultado de concatenar
-//el directorio actual en el que estamos mas views
-app.set('views', path.join(__dirname, 'views'))
-//Le definimos que el motor de plantillas a utilizar (view engine). En este caso es pug
-app.set('view engine', 'pug')
-
-//Definimos una ruta a la que se accede mediante el metodo get y esta en el raiz
-//Recibe dos pàrametros, request y response
-app.get('/', (req, res) => {
-  //Buscará e intentará renderizar un archivo home.pug
-  res.render('home')
-  //Renderizamos homeVars.pug pasandole las variables title y message
-  //res.render('homeVars', { title: 'Open Webinars!', message: 'Curso NodeJS!' })
-})
-
-//Le decimos a express que escuche el puerto 9000
-app.listen('9000', () => {
-  //Cuando el servidor arranca nos mostrará el siguiente mensaje
-  console.log('Server opened listen on http://localhost:9000')
-})
-
-En app.get será donde ejecutaremos el render de la plantilla. Se puede hacer de dos maneras:
-de forma fija (esta activo en el codigo con res.render('home')) o con variables que recibe 
-(esta comentado en el codigo res.render('homeVars', { title: 'Open Webinars!', message: 'Curso NodeJS!' }))
-
-14.- Ejecutamos npm run start para iniciar el servidor y accedemos a la url http://localhost:9000
-
-15.- Ahora añadiremos mas rutas para probar. Para ello, insertaremos este código antes del listen:
-//Ejemplo de ruta a raiz escribiendo codigo html y con enlace a nueva ruta
-app.get('/', (req, res, next) => {
-    res.write(`
-      <h1>Mi primera página en Node!</h1>
-      <a href="/indice">Indice</a>
-    `)
-    res.end()
-  })
-  
-  //Ejemplo de ruta dentro de raiz
-  app.get('/indice', (req, res, next) => {
-    res.write(`
-      <h1>Mi primera página en Node!</h1>
-      <h2>Indice de la web</h2>
-    `)
-    res.end()
-  })
-
-  Después solo hay que ejecutar npm run start y acceder a la url para ver los resultados
-
-16.- Creamos dentro de la carpeta de vistas (views) otra carpeta include donde introduciremos
-footer.pug, head.pug y header.pug que serán los bloques que usaremos en las páginas. 
-Los fuentes de esos archivos a continuación
-  //footer.pug
-  footer.footer
-  .container
-    p Fernando Beltran Brandez
-
-  //head.pug
-  head
-  meta(charset='utf-8')
-  title!= title
-  meta(
-    name='viewport'
-    content='width=device-width, initial-scale=1.0'
-  )
-
-  //header.pug
-  nav.navbar.navbar-expand-md.navbar-dark.fixed-top.bg-dark
-  a.navbar-brand(href='#') Navbar
-  button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarNav', aria-controls='navbarNav', aria-expanded='false', aria-label='Toggle navigation')
-    span.navbar-toggler-icon
-  #navbarNav.collapse.navbar-collapse
-    ul.navbar-nav
-      li.nav-item
-        a.nav-link(href='/') Home
-      li.nav-item
-        a.nav-link(href='/temario') Temario
-main(role='main')
-  .jumbotron
-    .container
-      h1.display-3 NodeJS
-      p Iniciacion de NodeJS donde estamos creando un servidor en Express
-
-Estos archivos serán los layouts que llamaremos desde las vistas.
-
-17.- Creamos las vistas (layouts) que llamaran a esos bloques. Estos serán la página inicial (home.pug) 
-y la subpagina temario (temario.pug). Estos son sus fuentes:
-//home.pug
-html
-  include includes/head.pug
-  body
-    include includes/header.pug
-    .container
-      h1.bd-title!= message
-      p.bd-lead Node.js es un entorno en tiempo de ejecución, multiplataforma. Esta especializado en I/O (entrada/salida) en una arquitectura orientada a eventos, asíncrono y creado con el motor de Javascript V8, de Chrome, nos permite desarrollar aplicaciones de servidor utilizando ECMAScript, por lo que no necesitamos de un navegador web para ejecutar dicho código. Extendido y utilizado en muchísimos proyectos, debido a su versatilidad, gran comunidad y cantidad de paquetes desarrollados por terceros, que se pueden utilizar en nuestro desarrollo, se está convirtiendo en una de las plataformas más extendidas y utilizadas en el mundo web, pero no solo se utiliza para el desarrollo web (back o front), si no que también es utilizado para temas de IOT, y demás.
-    include includes/footer.pug
-
-//temario.pug
-html
-  include includes/head.pug
-  body
-    include includes/header.pug
-    .container
-      h1.bd-title!= message
-
-    .container
-      .row
-        .col-md-4
-          h5 Introducción a Node.js
-          ol
-            li ¿Qué es Node.js?
-            li ¿Y NPM?
-            li ¿Qué podemos hacer con Node.js?
-            li Características de Node.js
-            li  Instalación
-            li Comunidad y ecosistema
-            li Hola Mundo!
-        .col-md-4
-          h5 Ecmascript
-          ol
-            li Nuevas features
-            li Babel
-        .col-md-4
-          h5 Node.js
-          ol
-            li Manejo de eventos
-            li Programación asíncrona
-            li Modularización
-            li Introducción a Sockets
-            li Manejo de errores
-            li Nodemon
-
-        .col-md-4
-          h5 Nuestro primer servidor web
-          ol
-            li Módulo HTTP
-            li Un servidor básico
-            li El objeto response
-            li Encabezados
-            li Nuestra home!
-            li Vitaminémos nuestra home!
-
-        .col-md-4
-          h5 Conexión a base de datos
-          ol
-            li MongoDB
-            li PostgresSQL
-
-        .col-md-4
-          h5 Express
-          ol
-            li ¿Qué es Express?
-            li Un poco de historia, y comunidad
-            li Middlewares
-
-        .col-md-4
-          h5 Renderizado desde el servidor
-          ol
-            li Nuestro primer servidor
-            li Configuremos nuestro servidor
-            li Trabajando con templates
-            li Routing
-            li Layouts
-            li Ficheros estáticos
-            li Rutas parametrizables
-            li Manejo de errores en express
-            li Modularización
-            li Testing de nuestra web
-
-        .col-md-4
-          h5 Nuestra primera Rest
-          ol
-            li ¿Qué es REST?
-            li Nuestro primer servidor
-            li Configuremos nuestra API
-            li Configurando el entorno (dev o prod)
-            li Routing
-            li Modularización
-            li Securizando nuestra API
-            li Testeando nuestra API Rest!
-
-        .col-md-4
-          h5 Sockets!
-          ol
-            li ¿Qué es, y para qué sirven los sockets?
-            li Implementación básica
-
-        .col-md-4
-          h5 Producción
-          ol
-            li Despleguemos nuestra web/API!
-
-        .col-md-4
-          h5 Bonus!
-          ol
-            li Dockerizando nuestro servidor!
-
-    include includes/footer.pug
-
-18.- Introduciremos este código en index.js:
-//RUTAS
-app.get('/', (req, res, next) => {
-    res.render('home', {
-      title: 'NodeJS',
-      message: 'Inicio en NodeJS y pruebas!'
-    })
-  })
-  
-  app.get('/temario', (req, res, next) => {
-    res.render('temario', {
-      title: 'NodeJS'
-    })
-  })
-
-19.- Ejecutamos npm run start en el terminal y accedemos a http://localhost:9000 para ver los resultados
-
-20.- Ahora meteremos estilos de bootstrap para darle un mejor aspecto visual. Creamos dentro de la 
-carpeta src la carpeta public y dentro de la carpeta public creamos tres ficheros: bootstrap.min.css, 
-custom.css y sticky-footer.css.
-
-21.- En bootstrap.min.css metemos la versión minimizada de bootstrap con este codigo (ver en archivo,
- codigo demasiado largo para mostrarlo aquí).
-
-22.-  El sticky-footer permitirá que el footer de la web se quede siempre en la parte de abajo con este código:
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-  position: relative;
-  min-height: 100%;
-}
-body {
-  margin-bottom: 60px; /* Margin bottom by footer height */
-}
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 60px; /* Set the fixed height of the footer here */
-  line-height: 60px; /* Vertically center the text there */
-  background-color: #f5f5f5;
-}
-
-.footer p {
-  margin-bottom: 0;
-}
-
-
-/* Custom page CSS
--------------------------------------------------- */
-/* Not required for template or sticky footer method. */
-
-.container {
-  width: auto;
-  max-width: 680px;
-  padding: 0 15px;
-}
-
-23.- En custom.css le añadiremos al body un padding superior con este código:
-body {
-  padding-top: 3.5rem;
-}
-
-24.- Para cargar el archivo css es necesario añadirlo a la plantilla. para ello, añadiremos este código
-en el head.pug al final (este archivo se carga siempre en todas las plantillas quue tenemos):
-link(
-    rel='stylesheet'
-    href='/static/bootstrap.min.css'
-  )
-  link(
-    rel='stylesheet'
-    href='/static/sticky-footer.css'
-  )
-  link(
-    rel='stylesheet'
-    href='/static/custom.css'
-  )
-  script(
-    src='/static/scripts.js'
-  )
-
-25.- Añadimos en index.js el siguiente codigo entre las rutas y el app.listen:
-//Le decimos que cuando detecte una petición a /static tiene que devolver un archivo del
-//directorio public
-app.use(
-  '/static',
-  express.static(path.join(__dirname, 'public'))
-)
-
-26.- Ejecutamos npm run start y accedemos a la url para ver los resultados
-
-27.- Ahora añadimos rutas parametizables con lo que podremos recibir valores desde la propia url 
-de la ruta. Para ello añadiremos la siguiente ruta en index.js entre la ultima ruta y el app.use:
-//Le decimos que el valor que reciba en la url lo guarde en la variable user
-app.get('/:user', (req, res, next) => {
-  res.render('user', {
-    title: 'Iniciacion NodeJS - Pagina de usuario',
-    //con req.paramas.user accederemos a esa variable que almacena el parametro recibido por url
-    message: `Bienvenido usuario ${req.params.user}`
-  })
-})
-
-28.- Creamos la ruta correspondiente al user. Para ello, creamos dentro de views el archivo 
-user.pug con este código:
-html
-  include includes/head.pug
-  body
-    include includes/header.pug
-    .container
-      h1.bd-title!= message
-
-    include includes/footer.pug
-
-29.- Ejecutamos npm run start y accedemos a la url http://localhost:9000/nombre-usuario donde
-nombre-usuario será el nombre con el que nos saludará la aplicación
-
-30.- Ahora crearemos una ruta de error por si el usuario entra en una ruta no definida. Para ello 
-añadimos en index.js un middleware entre el app.use y el app.listen con el siguiente codigo:
-//Ejecutaremos esta ruta si se accede a una ruta no definida
-app.use((req, res, next) => {
-  res.render('404', {
-    title: 'NodeJS',
-    message: `La ruta no existe!!!!!`
-  })
-  next(err)
-})
-
-31.- Creamos dentro de views el layout 404.pug con este codigo:
-html
-  include includes/head.pug
-  body
-    include includes/header.pug
-    .container
-      h1.bd-title!= message
-
-    include includes/footer.pug
-
-32.- Ahora modularizaremos la aplicacion en express. Para ello, moveremos las rutas a otro 
-archivo. Creamos dentro de src un archivo llamado router.js con este codigo:
-import home from './routes/home'
-import units from './routes/units'
-import user from './routes/user'
-
+//Exportamos (la vamos a utilizar fuera) una funcion que por defecto recibirá la instancia del
+//servidor creado
 export default app => {
-  app.use('/', home)
-  app.use('/temario', units)
-  app.use('/', user)
+  //Desabilitamos el x-powered
+  app.disable('x-powered-by')
+ 
+  //Seteamos el entorno de desarrollo. Le decimos que nuestro entorno se define por
+  //process.env.NODE_ENV
+  app.set('env', process.env.NODE_ENV)
+
+  //Desactivamos el logger en caso de los test
+  if (process.env.NODE_ENV !== 'test') {
+    //Usamos el formato de log combined que es el mas completo
+    app.use(logger('combined'))
+  }
+
+  //Parsearenis todos los logs que nos lleguen a un formato visible
+  app.use(bodyParser.json())
+  app.use(bodyParser.urlencoded({ extended: false }))
+ 
+  //Usamos cors. Cors permite configurar de forma automatica las cabeceras de la aplicacion
+  app.use(cors())
 }
 
-33.- Creamos un directorio dentro de src llamado routes y creamos dentro de el los archivos home.js,
-units.js y user.js.
+7.- Añadimos en index.js el siguiente import en la parte de arriba a continuación del de express:
+import config from './config'.
 
-34.- Dentro de home.js introducimos este código:
-import express from 'express'
+Tambien debemos añadirla al server. Para ello, sustituiremos el
+codigo de const server y todo su contenido por este:
+const server = {
+  start () {
+    const app = express()
+    //Recibimos el archivo de configuracion
+    config(app)
 
-//Le decimos a express que dentro de la variable router introduciremos rutas
-const router = express.Router()
+    _server = app.listen('9000', () => {
+      if (process.env.NODE_ENV !== 'test') {
+        console.log('Server opened listen on http://localhost:9000')
+      }
+    })
+  },
+  close () {
+    _server.close()
+  }
+}
 
-router.get('/', (req, res, next) => {
-  res.render('home', {
-    title: 'NodeJS',
-    message: 'Primeros pasos en NodeJS'
-  })
-})
+8.- Ejecutamos npm run start para verificar que no hayan errores
 
-export default router
+9.- Ahora vamos a configurar el entorno de desarrollo o produccion. Para ello necesitaremos
+la libreria dotenv que nos permitirá hacer muchas configuraciones. Para instalarla, ejecutar
+en el terminal npm install --save dotenv
 
-35.- Dentro de units.js introducimos este código:
-import express from 'express'
+10.- Vamos a crear en la raiz del proyecto (en el nivel superior a src) un archivo llamado .env
+en el que definiremos las variables de entorno. Introduciremos el siguiente codigo:
+ENV=development
+DEBUG=true
+HOST=localhost
+PORT=9000
+TIMEZONE=Europe/Amsterdam
 
-const router = express.Router()
+11.- Sustituir el codigo de config.js por este:
+//Importamos body-parser
+import bodyParser from 'body-parser'
+//Importamos el logger morgan
+import logger from 'morgan'
+//Importamos cors
+import cors from 'cors'
+//Importamos solo la funcion config de la dependencia dotenv
+import { config } from 'dotenv'
 
-router.get('/', (req, res, next) => {
-  res.render('temario', {
-    title: 'NodeJS'
-  })
-})
+//Cargamos la configuracion en la constante settings. Esto guarda toda la informacion del
+//fichero de configuracion
+const SETTINGS = config()
 
-export default router
+//Exportamos (la vamos a utilizar fuera) una funcion que por defecto recibirá la instancia del
+//servidor creado
+export default app => {
+  //Desabilitamos el x-powered
+  app.disable('x-powered-by')
+ 
+  //Seteamos el entorno de desarrollo. Le decimos que nuestro entorno se define por
+  //process.env.NODE_ENV
+  //app.set('env', process.env.NODE_ENV)
+  //El entorno de desarrollo vendrá definido en la configuracion que esta almacenada en SETTINGS
+  app.set('env', SETTINGS.parsed.ENV)
+ 
+  //Seteamos la variable config y le decimos que guarde todos los datos de settings
+  app.set('config', SETTINGS.parsed)
+  //Le decimos que de forma local el entorno es env (variable seteada arriba)
+  app.locals.env = app.get('env')
+  //Seteamos el config en el config local
+  app.locals.config = app.get('config')
 
-36.- Dentro de user.js el siguiente codigo:
-import express from 'express'
+  //Desactivamos el logger en caso de los test
+  if (process.env.NODE_ENV !== 'test') {
+    //Usamos el formato de log combined que es el mas completo
+    app.use(logger('combined'))
+  }
 
-const router = express.Router()
+  //Parsearenis todos los logs que nos lleguen a un formato visible
+  app.use(bodyParser.json())
+  app.use(bodyParser.urlencoded({ extended: false }))
+ 
+  //Usamos cors. Cors permite configurar de forma automatica las cabeceras de la aplicacion
+  app.use(cors())
+}
 
-router.get('/:user', (req, res, next) => {
-  res.render('user', {
-    title: 'NodeJS',
-    message: `Bienvenido usuario ${req.params.user}`
-  })
-})
+12.- Ejecutamos npm run start para verificar que no hay errores en el codigo
 
-export default router
+13.- Ahora añadiremos las rutas. Para ello, sobreescribiremos el objeto server (const server)
+de index.js por este codigo:
+const server = {
+  start () {
+    const app = express()
 
-37.- En el index.js, quitaremos el codigo de las tres rutas que tenemos y lo sustituiremos por esta linea:
-router(app)
+    config(app)
 
-38.- En la parte de arriba del index.js, al final de los import añadir este otro import:
-import router from './router'
+    // Rutas
+    app.get('/', (req, res, next) => {
+      res
+         //Devolvermos el status 200 (todo ha ido bien y un objeto json)
+        .status(200)
+        .json({ data: 'metodo get' })
+    })
 
-39.- Ejecutamos npm start y accedemos a la url
+    app.post('/', (req, res, next) => {
+      res
+         //Devolvermos el status 200 (todo ha ido bien y un objeto json)
+        .status(200)
+        .json({ data: 'metodo post' })
+    })
 
-40.- Ahora vamos a instalar las librerias para hacer testing. Para ello instalaremos una serie
-de aplicaciones utilizando el siguiente comando en el terminal:
-npm i --save-dev got chai cheerio mocha
+    app.put('/', (req, res, next) => {
+      res
+         //Devolvermos el status 200 (todo ha ido bien y un objeto json)
+        .status(200)
+        .json({ data: 'metodo put' })
+    })
+
+    app.delete('/', (req, res, next) => {
+      res
+         //Devolvermos el status 200 (todo ha ido bien y un objeto json)
+        .status(200)
+        .json({ data: 'metodo delete' })
+    })
+
+    _server = app.listen(app.locals.config.PORT, () => {
+      const address = _server.address()
+      const host = address.address === '::'
+        ? 'localhost'
+        : address
+
+      const port = app.locals.config.PORT
+      if (process.env.NODE_ENV !== 'test') {
+        console.log(`Server opened listen on http://${host}:${port}`)
+      }
+    })
+  },
+  close () {
+    _server.close()
+  }
+}
+
+14.- Ejecutamos npm run start para verificar que no hay errores
