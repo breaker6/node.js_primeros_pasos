@@ -78,7 +78,7 @@ export default app => {
 }
 
 7.- Añadimos en index.js el siguiente import en la parte de arriba a continuación del de express:
-import config from './config'.
+import config from './config'
 
 Tambien debemos añadirla al server. Para ello, sustituiremos el
 codigo de const server y todo su contenido por este:
