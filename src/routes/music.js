@@ -4,6 +4,8 @@ import express from 'express'
 //Importamos el archivo mocks que es el que tendrá la información a leer
 import mocks from '../../mocks'
 
+import { auth } from '../middlewares'
+
 //Usamos el router de express
 const router = express.Router()
 
@@ -15,7 +17,7 @@ router
       .status(200)
       .json(mocks)
   })
-  .post('/', (req, res, next) => {
+  .post('/', auth, (req, res, next) => {
     console.log('Body received:', req.body)
     //Devolvemos el estado 201 y un json
     res

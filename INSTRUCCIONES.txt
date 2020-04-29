@@ -348,3 +348,97 @@ import router from './router'
 
 20.- Ejecutamos npm run start para verificar que no hay errores. Con la aplicacion postman
 podemos verificar que las llamadas a las rutas funcionen de manera correcta.
+
+21.- Ahora vamos a añadirle un token para securizar nuestro servidor. Debemos instalar una libreria
+llamada jwt-simple con este comando en el terminal:
+npm i -save jwt-simple
+
+Esta libreria permite trabajar con tun token llamado jwt
+
+22.- Debemos de crear un middleware para que cuando entre a una ruta, el usuario tiene el token de
+autentificacion. Para ello, creamos dentro de src el archivo middlewares.js con este codigo:
+//Importamos la libreria del token
+import jwt from 'jwt-simple'
+
+//Exportamos una variable llamada auth que recibe request, response y next
+export const auth = (req, res, next) => {
+  //Si la peticion http que nos estan enviando tiene como cabecera un authorization
+  if (!req.headers.authorization) {
+    //Si la cabecera no tiene autentificacion, mandaremos el codigo 403 y el mensaje un
+    //autentificado
+    return res
+      .status(403)
+      .send({ message: 'No authenticate' })
+  }
+ 
+  //Si continua la ejecución, generamos el token y lo dividimos por espacios
+  const token = req.headers.authorization.split(' ')[1]
+  //Generamos un payload que decodifique el token enviado. Usaremos una variable de entorno TOKEN
+  const payload = jwt.decode(token, req.app.locals.config.TOKEN)
+
+  //Definimos una request user que será igual al payload.email
+  req.user = payload.email
+
+  next()
+}
+
+23.- En nuestras variables de entorno (el archivo .env) añadiremos esta linea al final
+TOKEN=1234567890
+
+24.- En el archivo music.js añadiremos añadiremos el middleware de autentificación con este
+codigo:
+import { auth } from '../middlewares'
+
+También en las rutas habrá que hacer una modificación. Para ello cambiaremos esta linea:
+//La llamada a / desde el metodo post
+.post('/', (req, res, next) => {
+
+Por esta:
+//auth añade el token de autentificación
+.post('/', auth, (req, res, next) => {
+
+25.- Eliminaremos todo el codigo de router.js y pondremos este:
+import music from './routes/music'
+import auth from './routes/auth'
+import user from './routes/me'
+
+export default app => {
+  app.use('/auth', auth)
+  app.use('/me', user)
+  app.use('/music', music)
+}
+
+Es igual pero añadiendo auth.
+
+26.- Creamos dentro de routes el archivo auth.js (nueva ruta) con el siguiente codigo:
+//Importamos express
+import express from 'express'
+//Importamos la libreria del token
+import jwt from 'jwt-simple'
+
+//Creamos el router
+const router = express.Router()
+
+//Creamos la ruta
+router
+  .post('/', (req, res, next) => {
+    //Guardamos como payload un objeto llamado email que obtendremos de params
+    const payload = {
+      email: req.params.email
+    }
+
+    //Devolveremos en una response el token que vamos a generar con el payload y con la clave
+    //secreta que hemos creado
+    return res
+      .status(200)
+      .send({ token: jwt.encode(payload, req.app.locals.config.TOKEN) })
+  })
+
+//Exportamos el router
+export default router
+
+27.- Ejecutamos npm run start en el terminal para verificar que no hay errores. con postman
+podremos hacer las pruebas. Podremos acceder a todas las rutas salvo a barra /music porque no
+tenemos token de autorizacion. para tenerlo habrá que llamar a la ruta auth enviandole
+una key email y un value valido y recibiremos el token. Si lo añadimos a nuestra peticion
+con key authorization y value JWT y el token ya accederá sin problema

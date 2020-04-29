@@ -1,9 +1,9 @@
 import music from './routes/music'
+import auth from './routes/auth'
 import user from './routes/me'
 
-//Exportamos una funcion que rebirá app
 export default app => {
-  //Dependiendo para que ruta usaremos cosas distintas
+  app.use('/auth', auth)
   app.use('/me', user)
   app.use('/music', music)
 }
