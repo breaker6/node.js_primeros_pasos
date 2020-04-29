@@ -3,6 +3,8 @@ import express from 'express'
 
 import config from './config'
 
+import router from './router'
+
 //Guardamos la instancia
 let _server
 
@@ -14,6 +16,7 @@ const server = {
     config(app)
 
     // Rutas
+    /*
     app.get('/', (req, res, next) => {
       res
          //Devolvermos el status 200 (todo ha ido bien y un objeto json)
@@ -40,7 +43,9 @@ const server = {
          //Devolvermos el status 200 (todo ha ido bien y un objeto json)
         .status(200)
         .json({ data: 'metodo delete' })
-    })
+    })*/
+    config(app)
+    router(app)
 
     _server = app.listen(app.locals.config.PORT, () => {
       const address = _server.address()

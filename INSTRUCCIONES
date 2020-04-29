@@ -217,3 +217,134 @@ const server = {
 }
 
 14.- Ejecutamos npm run start para verificar que no hay errores
+
+15.- Ahora crearemos rutas divididas de manera mas comoda. Creamos dentro de src el archivo
+router.js con este codigo:
+import music from './routes/music'
+import user from './routes/me'
+
+//Exportamos una funcion que rebirá app
+export default app => {
+  //Dependiendo para que ruta usaremos cosas distintas
+  app.use('/me', user)
+  app.use('/music', music)
+}
+
+16.- Creamos dentro de src un directorio routes y creamos el archivo me.js dentro de ella y le
+pondremos este codigo:
+//Importamos express para usar su funcion router
+import express from 'express'
+
+//Usaremos como router express.Router()
+const router = express.Router()
+
+//Nos definimos la ruta get /
+router.get('/', (req, res, next) => {
+  //Esta ruta devuelve un codigo de estado 200 y un json con datos
+  res
+    .status(200)
+    .json({
+      name: 'Fernando',
+      lastname: 'Beltrán'
+    })
+})
+
+//Exportamos el router
+export default router
+
+17.- Creamos dentro de routes el archivo music.js y le introducimos este codigo:
+//Importamos express
+import express from 'express'
+
+//Importamos el archivo mocks que es el que tendrá la información a leer
+import mocks from '../../mocks'
+
+//Usamos el router de express
+const router = express.Router()
+
+//Creamos la ruta / que será accesible mediante get y post
+router
+  .get('/', (req, res, next) => {
+    //Devolvemos el estado 200 y un json
+    res
+      .status(200)
+      .json(mocks)
+  })
+  .post('/', (req, res, next) => {
+    console.log('Body received:', req.body)
+    //Devolvemos el estado 201 y un json
+    res
+      .status(201)
+      .json(req.body)
+  })
+
+//Creamos una ruta que recibirá el nombre de un cantante
+router.get('/:singer', (req, res, next) => {
+  console.log('a', req.params.singer)
+  //Le decimos que guarde la informacion del cantante almacenada en el archivo mocks
+  const songsBySingers = mocks
+    .filter(item =>
+      item.singer.toLowerCase() === req.params.singer.toLowerCase()
+    )
+
+  //Le decimos que devuelva la informacion que ha leido en forma de json
+  res
+    .status(200)
+    .json(songsBySingers)
+})
+
+//Exportamos el router
+export default router
+
+18.- Creamos en la raiz del proyecto (en el nivel superior de src) el archivo mocks.js con este
+código:
+export default [
+  {
+    singer: 'Moonboy',
+    song: 'Postcards from Moon',
+    album: 'Postcards from Moon'
+  },
+  {
+    singer: 'Supermassive',
+    song: 'The One',
+    album: 'The One'
+  },
+  {
+    singer: 'The Seed',
+    song: 'The Roots',
+    album: 'Phrenology'
+  },
+  {
+    singer: 'Robin Schulz',
+    song: 'Fools',
+    album: 'OK'
+  },
+  {
+    singer: 'Robin Schulz',
+    song: 'OK',
+    album: 'OK'
+  },
+  {
+    singer: 'RagnBone',
+    song: 'Human',
+    album: 'Human'
+  },
+  {
+    singer: 'Charlie Puth',
+    song: 'How Long',
+    album: 'How long'
+  }
+]
+
+Estos serán los datos que utilizaremos en las rutas. Los guardamos en un array
+
+19.- Eliminamos las rutas creadas en el archivo index.js y las sustituimos por este código:
+config(app)
+router(app)
+
+También es necesario decirle que utilice router. Para ello, añadimos al principio del archivo
+index.js el siguiente codigo:
+import router from './router'
+
+20.- Ejecutamos npm run start para verificar que no hay errores. Con la aplicacion postman
+podemos verificar que las llamadas a las rutas funcionen de manera correcta.

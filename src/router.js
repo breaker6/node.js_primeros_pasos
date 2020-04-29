@@ -1,9 +1,9 @@
-import home from './routes/home'
-import units from './routes/units'
-import user from './routes/user'
+import music from './routes/music'
+import user from './routes/me'
 
+//Exportamos una funcion que rebirá app
 export default app => {
-  app.use('/', home)
-  app.use('/temario', units)
-  app.use('/', user)
+  //Dependiendo para que ruta usaremos cosas distintas
+  app.use('/me', user)
+  app.use('/music', music)
 }
