@@ -443,11 +443,11 @@ tenemos token de autorizacion. para tenerlo habrá que llamar a la ruta auth env
 una key email y un value valido y recibiremos el token. Si lo añadimos a nuestra peticion
 con key authorization y value JWT y el token ya accederá sin problema
 
-1.- Vamos a realizar una implementacion basica de socket en la api rest. Para ello tenemos
+28.- Vamos a realizar una implementacion basica de socket en la api rest. Para ello tenemos
 que instalar la libreria websocket con este comando:
 npm i --save ws
 
-2.- Creamos un fichero dentro de src llamado socket.js con este codigo:
+29.- Creamos un fichero dentro de src llamado socket.js con este codigo:
 //Importamos la libreria websocket
 import WebSocket from 'ws'
 
@@ -476,7 +476,7 @@ export const send = (method, url, data) => {
   }
 }
 
-3.- En el fichero index.js debemos añadir el socket. Para ello, añadimos este codigo en la parte
+30.- En el fichero index.js debemos añadir el socket. Para ello, añadimos este codigo en la parte
 inicial:
 import { connect } from './socket'
 
@@ -484,12 +484,12 @@ Además, cuando se conecta el servidor, hay que conectarlo. Para ello, en index.
 de la linea _server = app.listen(app.locals.config.PORT, () => { hay que añadir este codigo:
 connect()
 
-3.- Ejecutamos npm run start para ver si hay errores.
+31.- Ejecutamos npm run start para ver si hay errores.
 
-4.- Instalamos en chrome la extension Smart Websocket client y ponemos en el espacio de la
+32.- Instalamos en chrome la extension Smart Websocket client y ponemos en el espacio de la
 url ws://localhost:8080 y le pulsamos connect para verificar que conecta
 
-5.- Ahora añadiremos un mensaje a la conexion. Para ello añadiremos al principio de music.js 
+33.- Ahora añadiremos un mensaje a la conexion. Para ello añadiremos al principio de music.js 
 (dentro de la carpeta routes) el siguiente codigo:
 import { send as wsSend } from '../socket'
 
@@ -516,8 +516,8 @@ router
       .json(songsBySingers)
 })
 
-6.- Ejecutamos npm run start para verificar que no hay errores.
+34.- Ejecutamos npm run start para verificar que no hay errores.
 
-7.- Ejecutamos en chrome la extension Smart Websocket client y ponemos en el espacio de la
+35.- Ejecutamos en chrome la extension Smart Websocket client y ponemos en el espacio de la
 url ws://localhost:8080 y le pulsamos connect para verificar que devuelve el mensaje. El mensaje
 aparecerá en el terminal
