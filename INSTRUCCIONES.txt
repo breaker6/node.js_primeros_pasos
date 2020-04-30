@@ -442,3 +442,82 @@ podremos hacer las pruebas. Podremos acceder a todas las rutas salvo a barra /mu
 tenemos token de autorizacion. para tenerlo habrá que llamar a la ruta auth enviandole
 una key email y un value valido y recibiremos el token. Si lo añadimos a nuestra peticion
 con key authorization y value JWT y el token ya accederá sin problema
+
+1.- Vamos a realizar una implementacion basica de socket en la api rest. Para ello tenemos
+que instalar la libreria websocket con este comando:
+npm i --save ws
+
+2.- Creamos un fichero dentro de src llamado socket.js con este codigo:
+//Importamos la libreria websocket
+import WebSocket from 'ws'
+
+//Guardamos una instancia por si acaso
+let instance
+//Creamos una libreria que usar en la aplicacion
+//Creamos la constante connect que generará un socket que usará el puerto 8080
+export const connect = () => {
+  const socket = new WebSocket.Server({ port: 8080 })
+
+  //Cuando le llegue un evento llamado connection
+  socket.on('connection', ws => {
+    //Asignaremos el parametro ws recibido a la instancia creada
+    instance = ws
+    //Enviaremos a quien nos esté escuchando el texto
+    ws.send('Connectado al socket')
+  })
+}
+
+//Creamos la funcion send que recibe un method, una url y un dato
+export const send = (method, url, data) => {
+  //Comprobamos si existe una instancia
+  if (instance) {
+    //Si existe, mandaremos una cadena de texto
+    instance.send(`${method} ${url} ${JSON.stringify(data)}`)
+  }
+}
+
+3.- En el fichero index.js debemos añadir el socket. Para ello, añadimos este codigo en la parte
+inicial:
+import { connect } from './socket'
+
+Además, cuando se conecta el servidor, hay que conectarlo. Para ello, en index.js justo después
+de la linea _server = app.listen(app.locals.config.PORT, () => { hay que añadir este codigo:
+connect()
+
+3.- Ejecutamos npm run start para ver si hay errores.
+
+4.- Instalamos en chrome la extension Smart Websocket client y ponemos en el espacio de la
+url ws://localhost:8080 y le pulsamos connect para verificar que conecta
+
+5.- Ahora añadiremos un mensaje a la conexion. Para ello añadiremos al principio de music.js 
+(dentro de la carpeta routes) el siguiente codigo:
+import { send as wsSend } from '../socket'
+
+También será necesario añadir después de la linea .get('/', (req, res, next) => { el codigo:
+//Cuando el usuario haga una peticion a /music mandaremos el mensaje
+wsSend(req.method, req.baseUrl, mocks)
+
+Después será necesario en la peticion get a /:singer añadir justo antes del metodo res el siguiente codigo:
+//Cuando el usuario haga una peticion a /:singer mandaremos el mensaje
+wsSend(req.method, req.baseUrl, songsBySingers)
+
+El codigo de este metodo pasaría a ser así:
+router
+  .get('/:singer', (req, res, next) => {
+    const songsBySingers = mocks
+      .filter(item =>
+        item.singer.toLowerCase() === req.params.singer.toLowerCase()
+      )
+
+    wsSend(req.method, req.baseUrl, songsBySingers)
+
+    res
+      .status(200)
+      .json(songsBySingers)
+})
+
+6.- Ejecutamos npm run start para verificar que no hay errores.
+
+7.- Ejecutamos en chrome la extension Smart Websocket client y ponemos en el espacio de la
+url ws://localhost:8080 y le pulsamos connect para verificar que devuelve el mensaje. El mensaje
+aparecerá en el terminal

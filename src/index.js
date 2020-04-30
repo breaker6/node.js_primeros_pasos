@@ -5,6 +5,8 @@ import config from './config'
 
 import router from './router'
 
+import { connect } from './socket'
+
 //Guardamos la instancia
 let _server
 
@@ -48,6 +50,8 @@ const server = {
     router(app)
 
     _server = app.listen(app.locals.config.PORT, () => {
+      //Conectamos con el socket
+      connect()
       const address = _server.address()
       const host = address.address === '::'
         ? 'localhost'

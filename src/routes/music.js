@@ -6,12 +6,16 @@ import mocks from '../../mocks'
 
 import { auth } from '../middlewares'
 
+import { send as wsSend } from '../socket'
+
 //Usamos el router de express
 const router = express.Router()
 
 //Creamos la ruta / que será accesible mediante get y post
 router
   .get('/', (req, res, next) => {
+    //Cuando el usuario haga una peticion a /music mandaremos el mensaje
+    wsSend(req.method, req.baseUrl, mocks)
     //Devolvemos el estado 200 y un json
     res
       .status(200)
@@ -33,6 +37,9 @@ router.get('/:singer', (req, res, next) => {
     .filter(item =>
       item.singer.toLowerCase() === req.params.singer.toLowerCase()
     )
+
+  //Cuando el usuario haga una peticion a /:singer mandaremos el mensaje
+  wsSend(req.method, req.baseUrl, songsBySingers)
 
   //Le decimos que devuelva la informacion que ha leido en forma de json
   res
