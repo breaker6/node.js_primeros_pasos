@@ -2,7 +2,7 @@
 import express from 'express'
 
 //Importamos el archivo mocks que es el que tendrá la información a leer
-import mocks from '../../mocks'
+import mocks from '../mocks'
 
 import { auth } from '../middlewares'
 
